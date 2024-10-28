@@ -1,0 +1,275 @@
+import java.util.ArrayList;
+import java.util.GregorianCalendar;
+import java.util.Scanner;
+import java.util.jar.Attributes.Name;
+
+class Contact {
+    private String AName, FName;
+    private String[] phoneNumber;
+    private String affiliation, occupation, note = "";
+    private GregorianCalendar dob;
+    private boolean blocked = false;
+
+   
+    public Contact() {
+    }
+
+  
+    public Contact(String fName, String lName, String[] phoneNum, String affiliation, String occupation, GregorianCalendar dob) {
+        this.AName = AName;
+        this.FName = FName;
+        this.phoneNumber = phoneNumber;
+        this.affiliation = affiliation;
+        this.occupation = occupation;
+        this.dob = dob;
+    }
+
+   
+    public Contact(String AName, String FName) {
+        this.AName = AName;
+        this.FName = FName;
+    }
+
+   
+    public String getAName() {
+        return AName;
+    }
+
+    public void setAName(String AName) {
+        this.AName = AName;
+    }
+
+    public String getFName() {
+        return FName;
+    }
+
+    public void setName(String lName) {
+        this.FName = FName;
+    }
+
+    public String[] getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String[] phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    public String getAffiliation() {
+        return affiliation;
+    }
+
+    public void setAffiliation(String affiliation) {
+        this.affiliation = affiliation;
+    }
+
+    public String getOccupation() {
+        return occupation;
+    }
+
+    public void setOccupation(String occupation) {
+        this.occupation = occupation;
+    }
+
+    public GregorianCalendar getDob() {
+        return dob;
+    }
+
+    public void setDob(GregorianCalendar dob) {
+        this.dob = dob;
+    }
+
+    public String getNote() {
+        return note;
+    }
+
+    public void setNote(String note) {
+        this.note = note;
+    }
+
+    public boolean isBlocked() {
+        return blocked;
+    }
+
+    public void setBlocked(boolean blocked) {
+        this.blocked = blocked;
+    }
+
+    
+    public void replaceNumber(String oldNumber, String newNumber) {
+        for (int i = 0; i < phoneNumber.length; i++) {
+            if (phoneNumber[i].equals(oldNumber)) {
+                phoneNumber[i] = newNumber;
+            }
+        }
+    }
+
+  
+    @Override
+    public String toString() {
+        return "Contact: " + AName + " " + FName + "\nPhone: " + String.join(", ", phoneNumber) +
+                "\nAffiliation: " + affiliation + "\nOccupation: " + occupation +
+                "\nBlocked: " + blocked + "\n";
+    }
+}
+
+class Directory {
+    private ArrayList<Contact> directory = new ArrayList<>();
+
+  
+    public Directory() {
+    }
+
+   
+    public Directory(int num) {
+    }
+
+    
+    public void addContact(Contact c) {
+        directory.add(c);
+    }
+
+    
+    public void addContact(String A, String F, String[] p, String aff, String occ, GregorianCalendar dob) {
+        Contact c = new Contact(A, F, p, aff, occ, dob);
+        directory.add(c);
+    }
+
+    
+    public Contact searchContact(String AName) {
+        for (Contact c : directory) {
+            if (c.getAName().equalsIgnoreCase(AName)) {
+                return c;
+            }
+        }
+        return null;
+    }
+
+    
+    public boolean deleteContact(String AName) {
+        Contact c = searchContact(AName);
+        if (c != null) {
+            directory.remove(c);
+            return true;
+        }
+        return false;
+    }
+
+    
+    public void displayAll() {
+        for (Contact c : directory) {
+            System.out.println(c);
+        }
+    }
+
+    public boolean blockContact(String FName) {
+        Contact c = searchContact(FName);
+        if (c != null) {
+            c.setBlocked(true);
+            return true;
+        }
+        return false;
+    }
+}
+
+public class TestApplication {
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        Directory directory = new Directory();
+
+        while (true) {
+            System.out.println("\nPhone Directory Menu:");
+            System.out.println("1. Add Contact");
+            System.out.println("2. Search Contact");
+            System.out.println("3. Delete Contact");
+            System.out.println("4. Replace Number");
+            System.out.println("5. Display All Contacts");
+            System.out.println("6. Block Contact");
+            System.out.println("7. Exit");
+            System.out.print("Enter your choice: ");
+            int choice = scanner.nextInt();
+            scanner.nextLine(); // Consume newline
+
+            switch (choice) {
+                case 1:
+                    System.out.print("Enter First Name: ");
+                    String AName = scanner.nextLine();
+                    System.out.print("Enter Last Name: ");
+                    String FName = scanner.nextLine();
+                    System.out.print("Enter Phone Numbers (comma separated): ");
+                    String[] phoneNumber = scanner.nextLine().split(",");
+                    System.out.print("Enter Affiliation: ");
+                    String affiliation = scanner.nextLine();
+                    System.out.print("Enter Occupation: ");
+                    String occupation = scanner.nextLine();
+                    GregorianCalendar dob = new GregorianCalendar(); // Add DOB if needed
+
+                    Contact newContact = new Contact(AName, FName, phoneNumber, affiliation, occupation, dob);
+                    directory.addContact(newContact);
+                    break;
+
+                case 2:
+                    System.out.print("Enter First Name to search: ");
+                    String searchName = scanner.nextLine();
+                    Contact foundContact = directory.searchContact(searchName);
+                    if (foundContact != null) {
+                        System.out.println(foundContact);
+                    } else {
+                        System.out.println("Contact not found.");
+                    }
+                    break;
+
+                case 3:
+                    System.out.print("Enter First Name to delete: ");
+                    String deleteName = scanner.nextLine();
+                    if (directory.deleteContact(deleteName)) {
+                        System.out.println("Contact deleted.");
+                    } else {
+                        System.out.println("Contact not found.");
+                    }
+                    break;
+
+                case 4:
+                    System.out.print("Enter First Name to update: ");
+                    String replaceName = scanner.nextLine();
+                    Contact contactToUpdate = directory.searchContact(replaceName);
+                    if (contactToUpdate != null) {
+                        System.out.print("Enter old number: ");
+                        String oldNumber = scanner.nextLine();
+                        System.out.print("Enter new number: ");
+                        String newNumber = scanner.nextLine();
+                        contactToUpdate.replaceNumber(oldNumber, newNumber);
+                        System.out.println("Number updated.");
+                    } else {
+                        System.out.println("Contact not found.");
+                    }
+                    break;
+
+                case 5:
+                    directory.displayAll();
+                    break;
+
+                case 6:
+                    System.out.print("Enter First Name to block: ");
+                    String blockName = scanner.nextLine();
+                    if (directory.blockContact(blockName)) {
+                        System.out.println("Contact blocked.");
+                    } else {
+                        System.out.println("Contact not found.");
+                    }
+                    break;
+
+                case 7:
+                    System.out.println("Exit");
+                    scanner.close();
+                    return;
+
+                default:
+                    System.out.println(" Try again.");
+            }
+        }
+
+    }
+}
+
